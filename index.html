@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#041E42">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fotoriktning">
+<meta name="format-detection" content="telephone=no">
 <title>Eurowind Fotoriktning</title>
 <style>
   /* EWE: Dark Blue #041E42, Sky Blue #ABCAF6, White. Gellix Bold/Regular. Heldragna ytor, skarpa hörn, inga linjer. */
@@ -281,12 +286,16 @@ const $=id=>document.getElementById(id);
 const num=v=>parseFloat(String(v).replace(/\s/g,'').replace(',','.'));
 const store={get(k,d){try{return localStorage.getItem(k)??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 for(const id of ['aE','aN','decl','trim','cmpMode','parkName']){ const v=store.get('fr_'+id,null); if(v!==null) $(id).value=v; }
+function parkLabel(){
+  const name=$('parkName').value.trim();
+  return name?('centrum av Vindpark '+name):'centrum A';
+}
 function renderTitle(){
   const name=$('parkName').value.trim();
   $('title').textContent=name?('Fotoriktning mot centrum Vindpark '+name):'Fotoriktning mot centrum A';
   store.set('fr_parkName',$('parkName').value);
 }
-$('parkName').addEventListener('input',renderTitle);
+$('parkName').addEventListener('input',()=>{renderTitle();render();});
 renderTitle();
 
 // Skala på rosetten
@@ -354,7 +363,7 @@ function render(){
   if(ar<=1){card.classList.add('state-ok'); colour='var(--ok)';}
   else if(ar<=5){card.classList.add('state-near'); colour='var(--warn)';}
   head.setAttribute('fill',colour);
-  $('turn').innerHTML=(ar<=1?'Kameran pekar mot A':(rel>0?'Vrid '+fmt(ar)+'° åt höger':'Vrid '+fmt(ar)+'° åt vänster'))+
+  $('turn').innerHTML=(ar<=1?'Pilen pekar mot '+parkLabel():(rel>0?'Vrid '+fmt(ar)+'° åt höger':'Vrid '+fmt(ar)+'° åt vänster'))+
     '<small>Mål: '+fmt(bearTrue)+'° rättvisande · Nu: '+fmt(headTrue)+'°</small>';
 }
 
